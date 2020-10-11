@@ -1,28 +1,9 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -61,43 +42,103 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserCommandRepository = void 0;
+exports.BaseRepository = void 0;
 var inversify_1 = require("inversify");
-var Entities_1 = require("../../Entities");
-var BaseRepository_1 = require("../BaseRepository");
-var UserCommandRepository = /** @class */ (function (_super) {
-    __extends(UserCommandRepository, _super);
-    function UserCommandRepository(entityModel) {
-        var _this = _super.call(this) || this;
-        _this.entityModel = entityModel;
-        return _this;
+var BaseRepository = /** @class */ (function () {
+    function BaseRepository() {
+        this.formatter = Object;
+        this.getInclude = [];
+        this.saveInclude = [];
     }
-    UserCommandRepository.prototype.CreateUser = function (user) {
+    BaseRepository.prototype.create = function (model) {
         return __awaiter(this, void 0, void 0, function () {
+            var resultSet;
             return __generator(this, function (_a) {
-                return [2 /*return*/, _super.prototype.create.call(this, user)];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.entityModel.model.create(model, { raw: true })];
+                    case 1:
+                        resultSet = _a.sent();
+                        return [2 /*return*/, this.plainToEntityType(resultSet)];
+                }
             });
         });
     };
-    UserCommandRepository.prototype.UpdateUser = function (user, whereCondition) {
+    BaseRepository.prototype.update = function (where, model) {
         return __awaiter(this, void 0, void 0, function () {
+            var include, options;
             return __generator(this, function (_a) {
-                return [2 /*return*/, _super.prototype.update.call(this, whereCondition, user)];
+                switch (_a.label) {
+                    case 0:
+                        include = this.getInclude;
+                        options = {
+                            where: where,
+                            include: include
+                        };
+                        return [4 /*yield*/, this.entityModel.model.update(model, options)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
             });
         });
     };
-    UserCommandRepository.prototype.DeleteUser = function (user) {
+    BaseRepository.prototype.delete = function (where) {
         return __awaiter(this, void 0, void 0, function () {
+            var include, options, n;
             return __generator(this, function (_a) {
-                return [2 /*return*/, _super.prototype.delete.call(this, user)];
+                switch (_a.label) {
+                    case 0:
+                        include = this.getInclude;
+                        options = {
+                            where: where,
+                            include: include
+                        };
+                        return [4 /*yield*/, this.entityModel.model.destroy(options)];
+                    case 1:
+                        n = _a.sent();
+                        return [2 /*return*/, { n: n }];
+                }
             });
         });
     };
-    UserCommandRepository = __decorate([
-        inversify_1.injectable(),
-        __param(0, inversify_1.inject(Entities_1.UserEntity)),
-        __metadata("design:paramtypes", [Entities_1.UserEntity])
-    ], UserCommandRepository);
-    return UserCommandRepository;
-}(BaseRepository_1.BaseRepository));
-exports.UserCommandRepository = UserCommandRepository;
+    BaseRepository.prototype.get = function (offset, limit, attributes, where, order, include) {
+        if (offset === void 0) { offset = 0; }
+        if (limit === void 0) { limit = 250; }
+        if (include === void 0) { include = this.getInclude; }
+        return __awaiter(this, void 0, void 0, function () {
+            var options, resultSet;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        options = {
+                            include: include,
+                            where: where,
+                            attributes: attributes,
+                            limit: limit,
+                            offset: offset,
+                            order: order
+                        };
+                        options.raw = true;
+                        return [4 /*yield*/, this.entityModel.model.findAll(options)];
+                    case 1:
+                        resultSet = _a.sent();
+                        return [2 /*return*/, this.plainToEntityTypeArr(resultSet)];
+                }
+            });
+        });
+    };
+    BaseRepository.prototype.plainToEntityType = function (resultSet) {
+        var rawJson = JSON.parse(JSON.stringify(resultSet));
+        return rawJson;
+    };
+    BaseRepository.prototype.plainToEntityTypeArr = function (resultSet) {
+        var rawJson = new Array();
+        resultSet.forEach(function (obj) {
+            rawJson.push(JSON.parse(JSON.stringify(obj)));
+        });
+        return rawJson;
+    };
+    BaseRepository = __decorate([
+        inversify_1.injectable()
+    ], BaseRepository);
+    return BaseRepository;
+}());
+exports.BaseRepository = BaseRepository;

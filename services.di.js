@@ -4,6 +4,7 @@ exports.DI = void 0;
 exports.DI = {
     //#region - middlewares
     AuthMw: 'AuthenticationMiddleware',
+    SecurityMW: 'SecurityValidationMiddleware',
     //#endregion
     //#region - User
     IUserProcessor: 'IUserProcessor',

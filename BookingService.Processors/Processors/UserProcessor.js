@@ -47,14 +47,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserProcessor = void 0;
 var inversify_1 = require("inversify");
 var services_di_1 = require("../../services.di");
+var bcrypt_1 = __importDefault(require("bcrypt"));
+var config_1 = __importDefault(require("../../config"));
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var UserProcessor = /** @class */ (function () {
-    /**
-     *
-     */
     function UserProcessor(userQueryRepository, userCommandRepository, userValidator) {
         this.userQueryRepository = userQueryRepository;
         this.userCommandRepository = userCommandRepository;
@@ -62,47 +65,110 @@ var UserProcessor = /** @class */ (function () {
     }
     UserProcessor.prototype.GetUser = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userQueryRepository.GetUser(id)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    UserProcessor.prototype.GetUsers = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userQueryRepository.GetUsers()];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    UserProcessor.prototype.CreateUser = function (user) {
-        return __awaiter(this, void 0, void 0, function () {
+            var whereCondition;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log(user);
-                        return [4 /*yield*/, this.userValidator.ValidateUser(user)];
+                        whereCondition = {};
+                        whereCondition.auid = id;
+                        return [4 /*yield*/, this.userQueryRepository.GetUser(whereCondition)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    UserProcessor.prototype.UserSignUp = function (user) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _a = user;
+                        return [4 /*yield*/, bcrypt_1.default.genSalt(10)];
                     case 1:
-                        _a.sent();
-                        return [2 /*return*/, this.userCommandRepository.CreateUser(user)];
+                        _a.salt = _c.sent();
+                        _b = user;
+                        return [4 /*yield*/, bcrypt_1.default.hash(user.password, user.salt)];
+                    case 2:
+                        _b.password = _c.sent();
+                        user.language = "en-US";
+                        return [4 /*yield*/, this.userCommandRepository.CreateUser(user)];
+                    case 3: return [2 /*return*/, _c.sent()];
+                }
+            });
+        });
+    };
+    UserProcessor.prototype.UserSignIn = function (user) {
+        return __awaiter(this, void 0, void 0, function () {
+            var whereCondition, userObj, isPasswordMatch, resultObj, token;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        whereCondition = {};
+                        whereCondition.email = user.email;
+                        return [4 /*yield*/, this.userQueryRepository.GetUser(whereCondition)];
+                    case 1:
+                        userObj = (_a.sent()) || null;
+                        isPasswordMatch = false;
+                        resultObj = {};
+                        if (!(userObj != null)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, bcrypt_1.default.compare(user.password, userObj.password)];
+                    case 2:
+                        isPasswordMatch = _a.sent();
+                        if (!isPasswordMatch) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.generateToken({ "auid": userObj["auid"].toString() })];
+                    case 3:
+                        token = _a.sent();
+                        resultObj = { userdetails: userObj, authtoken: token };
+                        _a.label = 4;
+                    case 4:
+                        if (userObj == null || !isPasswordMatch) {
+                            throw 400;
+                        }
+                        return [2 /*return*/, resultObj];
                 }
             });
         });
     };
     UserProcessor.prototype.UpdateUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
+            var whereCondition;
+            return __generator(this, function (_a) {
+                whereCondition = {};
+                whereCondition.auid = user.auid;
+                return [2 /*return*/, this.userCommandRepository.UpdateUser(whereCondition, user)];
+            });
+        });
+    };
+    UserProcessor.prototype.DeleteUser = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var whereCondition;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userValidator.ValidateUser(user)];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/, this.userCommandRepository.UpdateUser(user)];
+                    case 0:
+                        whereCondition = {};
+                        whereCondition.auid = id;
+                        return [4 /*yield*/, this.userCommandRepository.DeleteUser(whereCondition)];
+                    case 1: return [2 /*return*/, _a.sent()];
                 }
+            });
+        });
+    };
+    UserProcessor.prototype.generateToken = function (param) {
+        return __awaiter(this, void 0, void 0, function () {
+            var exp, authToken;
+            return __generator(this, function (_a) {
+                if (param != null) {
+                    exp = new Date();
+                    exp.setDate(exp.getDate() + 7);
+                    param.exp = exp.getTime() / 1000;
+                    authToken = jsonwebtoken_1.default.sign(param, config_1.default.jwtsecretkey);
+                    return [2 /*return*/, authToken];
+                }
+                else {
+                    return [2 /*return*/, null];
+                }
+                return [2 /*return*/];
             });
         });
     };

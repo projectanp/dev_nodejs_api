@@ -84,6 +84,7 @@ exports.UserController = void 0;
 var express = __importStar(require("express"));
 var inversify_1 = require("inversify");
 var inversify_express_utils_1 = require("inversify-express-utils");
+var Logger_1 = require("../../1.Libraries/Logger/Logger");
 var services_di_1 = require("../../services.di");
 var BaseController_1 = require("./BaseController");
 /**
@@ -96,43 +97,26 @@ var UserController = /** @class */ (function (_super) {
         _this._userProcessor = _userProcessor;
         return _this;
     }
-    UserController.prototype.GetUsers = function (res) {
+    UserController.prototype.UserLogin = function (req, res) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            var users, err_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var user, users, err_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this._userProcessor.GetUsers()];
+                        _c.trys.push([0, 2, , 3]);
+                        user = {};
+                        user.email = ((_a = req.query["email"]) === null || _a === void 0 ? void 0 : _a.toString()) || "";
+                        user.password = ((_b = req.query["password"]) === null || _b === void 0 ? void 0 : _b.toString()) || "";
+                        return [4 /*yield*/, this._userProcessor.UserSignIn(user)];
                     case 1:
-                        users = _a.sent();
+                        users = _c.sent();
                         res.status(200).json(this.MapToSuccessResponse(users));
                         return [3 /*break*/, 3];
                     case 2:
-                        err_1 = _a.sent();
-                        res.status(500).json(this.MapDefaultFailureResponse(err_1.message));
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    UserController.prototype.Searchuser = function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var users, err_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        console.log(req.query);
-                        return [4 /*yield*/, this._userProcessor.GetUsers()];
-                    case 1:
-                        users = _a.sent();
-                        res.status(200).json(this.MapToSuccessResponse(users));
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_2 = _a.sent();
-                        res.status(500).json(this.MapDefaultFailureResponse(err_2.message));
+                        err_1 = _c.sent();
+                        Logger_1.Logger.LogError("Error in  user signin", err_1);
+                        res.status(500).json(this.MapDefaultFailureResponse("Access Denied"));
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -141,7 +125,7 @@ var UserController = /** @class */ (function (_super) {
     };
     UserController.prototype.GetUser = function (id, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, err_3;
+            var user, err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -152,29 +136,31 @@ var UserController = /** @class */ (function (_super) {
                         res.status(200).json(this.MapToSuccessResponse(user));
                         return [3 /*break*/, 3];
                     case 2:
-                        err_3 = _a.sent();
-                        res.status(500).json(this.MapDefaultFailureResponse(err_3.message));
+                        err_2 = _a.sent();
+                        Logger_1.Logger.LogError("Error in get user " + id, err_2);
+                        res.status(500).json(this.MapDefaultFailureResponse(err_2.message));
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    UserController.prototype.CreateUser = function (user, res) {
+    UserController.prototype.UserSignUp = function (user, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var status, err_4;
+            var status, err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this._userProcessor.CreateUser(user)];
+                        return [4 /*yield*/, this._userProcessor.UserSignUp(user)];
                     case 1:
                         status = _a.sent();
                         res.status(201).json(this.MapToSuccessResponse(status));
                         return [3 /*break*/, 3];
                     case 2:
-                        err_4 = _a.sent();
-                        res.status(500).json(this.MapDefaultFailureResponse(err_4.message));
+                        err_3 = _a.sent();
+                        Logger_1.Logger.LogError("create user", err_3);
+                        res.status(500).json(this.MapDefaultFailureResponse(err_3.message));
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -183,7 +169,7 @@ var UserController = /** @class */ (function (_super) {
     };
     UserController.prototype.UpdateUser = function (user, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var status, err_5;
+            var status, err_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -194,7 +180,30 @@ var UserController = /** @class */ (function (_super) {
                         res.status(200).json(this.MapToSuccessResponse(status));
                         return [3 /*break*/, 3];
                     case 2:
+                        err_4 = _a.sent();
+                        Logger_1.Logger.LogError("update user", err_4);
+                        res.status(500).json(this.MapDefaultFailureResponse(err_4.message));
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UserController.prototype.DeleteUser = function (id, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var status, err_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this._userProcessor.DeleteUser(id)];
+                    case 1:
+                        status = _a.sent();
+                        res.status(200).json(this.MapToSuccessResponse(status));
+                        return [3 /*break*/, 3];
+                    case 2:
                         err_5 = _a.sent();
+                        Logger_1.Logger.LogError("delete user", err_5);
                         res.status(500).json(this.MapDefaultFailureResponse(err_5.message));
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
@@ -203,19 +212,12 @@ var UserController = /** @class */ (function (_super) {
         });
     };
     __decorate([
-        inversify_express_utils_1.httpGet("/"),
-        __param(0, inversify_express_utils_1.response()),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], UserController.prototype, "GetUsers", null);
-    __decorate([
-        inversify_express_utils_1.httpGet("/search"),
+        inversify_express_utils_1.httpGet("/signin"),
         __param(0, inversify_express_utils_1.request()), __param(1, inversify_express_utils_1.response()),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", [Object, Object]),
         __metadata("design:returntype", Promise)
-    ], UserController.prototype, "Searchuser", null);
+    ], UserController.prototype, "UserLogin", null);
     __decorate([
         inversify_express_utils_1.httpGet("/:id"),
         __param(0, inversify_express_utils_1.requestParam("id")), __param(1, inversify_express_utils_1.response()),
@@ -224,21 +226,28 @@ var UserController = /** @class */ (function (_super) {
         __metadata("design:returntype", Promise)
     ], UserController.prototype, "GetUser", null);
     __decorate([
-        inversify_express_utils_1.httpPost("/"),
+        inversify_express_utils_1.httpPost("/signup"),
         __param(0, inversify_express_utils_1.requestBody()), __param(1, inversify_express_utils_1.response()),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", [Object, Object]),
         __metadata("design:returntype", Promise)
-    ], UserController.prototype, "CreateUser", null);
+    ], UserController.prototype, "UserSignUp", null);
     __decorate([
-        inversify_express_utils_1.httpPut("/"),
+        inversify_express_utils_1.httpPut("/updateprofile"),
         __param(0, inversify_express_utils_1.requestBody()), __param(1, inversify_express_utils_1.response()),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", [Object, Object]),
         __metadata("design:returntype", Promise)
     ], UserController.prototype, "UpdateUser", null);
+    __decorate([
+        inversify_express_utils_1.httpDelete("/:id"),
+        __param(0, inversify_express_utils_1.requestParam('id')), __param(1, inversify_express_utils_1.response()),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Number, Object]),
+        __metadata("design:returntype", Promise)
+    ], UserController.prototype, "DeleteUser", null);
     UserController = __decorate([
-        inversify_express_utils_1.controller("/api/user", services_di_1.DI.AuthMw),
+        inversify_express_utils_1.controller("/api/user", services_di_1.DI.SecurityMW, services_di_1.DI.AuthMw),
         __param(0, inversify_1.inject(services_di_1.DI.IUserProcessor)),
         __metadata("design:paramtypes", [Object])
     ], UserController);

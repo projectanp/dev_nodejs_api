@@ -11,10 +11,9 @@ var inversify_express_utils_1 = require("inversify-express-utils");
 var DomainServiceConfigurations_1 = require("./BookingService.Processors/Configurations/DomainServiceConfigurations");
 var RepoServiceConfigurations_1 = require("./BookingService.Repository/Configurations/RepoServiceConfigurations");
 var ApiConfigurations_1 = require("./BookingService.API/Configurations/ApiConfigurations");
+var config_1 = __importDefault(require("./config"));
+require("./BookingService.API/Controllers");
 //#region Controllers - Import all controllers here
-require("./BookingService.API/Controllers/UserController");
-require("./BookingService.API/Controllers/HeartBeatController");
-require("./BookingService.API/Controllers/AppController");
 //#endregion
 //#region - Dependency injection container
 // set up container
@@ -40,4 +39,4 @@ server.setErrorConfig(function (app) {
 });
 var app = server.build();
 exports.routeInfo = inversify_express_utils_1.getRouteInfo(container);
-app.listen(3000);
+app.listen(config_1.default.port);

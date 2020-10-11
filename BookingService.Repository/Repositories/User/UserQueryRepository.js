@@ -1,4 +1,17 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -7,6 +20,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -47,33 +63,40 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserQueryRepository = void 0;
 var inversify_1 = require("inversify");
-var UserQueryRepository = /** @class */ (function () {
-    function UserQueryRepository() {
+var Entities_1 = require("../../Entities");
+var BaseRepository_1 = require("../BaseRepository");
+var UserQueryRepository = /** @class */ (function (_super) {
+    __extends(UserQueryRepository, _super);
+    function UserQueryRepository(entityModel) {
+        var _this = _super.call(this) || this;
+        _this.entityModel = entityModel;
+        return _this;
     }
-    UserQueryRepository.prototype.GetUsers = function () {
+    UserQueryRepository.prototype.GetUsers = function (user) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, [{
-                            id: 1,
-                            name: "bob"
-                        }]];
+                return [2 /*return*/, _super.prototype.get.call(this, undefined, undefined, ["*"], user, null, undefined)];
             });
         });
     };
-    UserQueryRepository.prototype.GetUser = function (id) {
+    UserQueryRepository.prototype.GetUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
+            var userObj;
             return __generator(this, function (_a) {
-                return [2 /*return*/, {
-                        id: 1,
-                        name: "bob"
-                    }];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, _super.prototype.get.call(this, undefined, undefined, ["*"], user, null, undefined)];
+                    case 1:
+                        userObj = _a.sent();
+                        return [2 /*return*/, userObj[0]];
+                }
             });
         });
     };
     UserQueryRepository = __decorate([
         inversify_1.injectable(),
-        __metadata("design:paramtypes", [])
+        __param(0, inversify_1.inject(Entities_1.UserEntity)),
+        __metadata("design:paramtypes", [Entities_1.UserEntity])
     ], UserQueryRepository);
     return UserQueryRepository;
-}());
+}(BaseRepository_1.BaseRepository));
 exports.UserQueryRepository = UserQueryRepository;
