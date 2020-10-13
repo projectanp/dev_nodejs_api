@@ -1,22 +1,31 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -58,51 +67,56 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SecurityValidationMiddleware = void 0;
+exports.RedisPersistence = void 0;
 var inversify_1 = require("inversify");
-var inversify_express_utils_1 = require("inversify-express-utils");
-var SecurityValidationSchema_1 = __importDefault(require("../../AccountService.API/Configurations/SecurityValidationSchema"));
-var Logger_1 = require("../Logger/Logger");
-var SecurityValidationMiddleware = /** @class */ (function (_super) {
-    __extends(SecurityValidationMiddleware, _super);
-    function SecurityValidationMiddleware() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var redis = __importStar(require("redis"));
+var Logger_1 = require("../../1.Libraries/Logger/Logger");
+var config_1 = __importDefault(require("../../config"));
+var RedisPersistence = /** @class */ (function () {
+    function RedisPersistence() {
+        this.db = redis.createClient(config_1.default.REDIS.port, config_1.default.REDIS.host, config_1.default.REDIS);
+        this.db.on('connect', function () {
+            Logger_1.Logger.LogInfo("Redis Connected :)");
+        });
     }
-    SecurityValidationMiddleware.prototype.handler = function (req, res, next) {
+    RedisPersistence.prototype.get = function (key) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, schema, err_1;
+            var _this = this;
+            return __generator(this, function (_a) {
+                if (this.db.exists(key)) {
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.db.get(key, function (err, data) {
+                                resolve(data);
+                            });
+                        })];
+                }
+                return [2 /*return*/];
+            });
+        });
+    };
+    RedisPersistence.prototype.set = function (key, value) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.db.set(key, value);
+                this.db.expire(key, 604800); // data expires in 7 days
+                return [2 /*return*/];
+            });
+        });
+    };
+    RedisPersistence.prototype.delete = function (key, value) {
+        return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 5, , 6]);
-                        url = req.url.split("?")[0];
-                        if (!SecurityValidationSchema_1.default.has(url)) return [3 /*break*/, 4];
-                        schema = SecurityValidationSchema_1.default.get(url);
-                        if (!(req.method == "GET")) return [3 /*break*/, 2];
-                        return [4 /*yield*/, (schema === null || schema === void 0 ? void 0 : schema.validateAsync(req.query))];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, (schema === null || schema === void 0 ? void 0 : schema.validateAsync(req.body))];
-                    case 3:
-                        _a.sent();
-                        _a.label = 4;
-                    case 4:
-                        next();
-                        return [3 /*break*/, 6];
-                    case 5:
-                        err_1 = _a.sent();
-                        Logger_1.Logger.LogError("SecurityValidationMiddleware error", err_1);
-                        res.status(400).json({ error: err_1 });
-                        return [3 /*break*/, 6];
-                    case 6: return [2 /*return*/];
+                    case 0: return [4 /*yield*/, this.db.del(key)];
+                    case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    SecurityValidationMiddleware = __decorate([
-        inversify_1.injectable()
-    ], SecurityValidationMiddleware);
-    return SecurityValidationMiddleware;
-}(inversify_express_utils_1.BaseMiddleware));
-exports.SecurityValidationMiddleware = SecurityValidationMiddleware;
+    RedisPersistence = __decorate([
+        inversify_1.injectable(),
+        __metadata("design:paramtypes", [])
+    ], RedisPersistence);
+    return RedisPersistence;
+}());
+exports.RedisPersistence = RedisPersistence;

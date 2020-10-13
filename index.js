@@ -8,11 +8,11 @@ var inversify_1 = require("inversify");
 require("reflect-metadata");
 var body_parser_1 = __importDefault(require("body-parser"));
 var inversify_express_utils_1 = require("inversify-express-utils");
-var DomainServiceConfigurations_1 = require("./BookingService.Processors/Configurations/DomainServiceConfigurations");
-var RepoServiceConfigurations_1 = require("./BookingService.Repository/Configurations/RepoServiceConfigurations");
-var ApiConfigurations_1 = require("./BookingService.API/Configurations/ApiConfigurations");
+var DomainServiceConfigurations_1 = require("./AccountService.Processors/Configurations/DomainServiceConfigurations");
+var RepoServiceConfigurations_1 = require("./AccountService.Repository/Configurations/RepoServiceConfigurations");
+var ApiConfigurations_1 = require("./AccountService.API/Configurations/ApiConfigurations");
 var config_1 = __importDefault(require("./config"));
-require("./BookingService.API/Controllers");
+require("./AccountService.API/Controllers");
 //#region Controllers - Import all controllers here
 //#endregion
 //#region - Dependency injection container
@@ -39,4 +39,4 @@ server.setErrorConfig(function (app) {
 });
 var app = server.build();
 exports.routeInfo = inversify_express_utils_1.getRouteInfo(container);
-app.listen(process.env.PORT || 5000);
+app.listen(config_1.default.port);

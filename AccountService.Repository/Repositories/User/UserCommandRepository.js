@@ -18,6 +18,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -54,55 +60,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SecurityValidationMiddleware = void 0;
+exports.UserCommandRepository = void 0;
 var inversify_1 = require("inversify");
-var inversify_express_utils_1 = require("inversify-express-utils");
-var SecurityValidationSchema_1 = __importDefault(require("../../AccountService.API/Configurations/SecurityValidationSchema"));
-var Logger_1 = require("../Logger/Logger");
-var SecurityValidationMiddleware = /** @class */ (function (_super) {
-    __extends(SecurityValidationMiddleware, _super);
-    function SecurityValidationMiddleware() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var Entities_1 = require("../../Entities");
+var BaseRepository_1 = require("../BaseRepository");
+var UserCommandRepository = /** @class */ (function (_super) {
+    __extends(UserCommandRepository, _super);
+    function UserCommandRepository(entityModel) {
+        var _this = _super.call(this) || this;
+        _this.entityModel = entityModel;
+        return _this;
     }
-    SecurityValidationMiddleware.prototype.handler = function (req, res, next) {
+    UserCommandRepository.prototype.CreateUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, schema, err_1;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 5, , 6]);
-                        url = req.url.split("?")[0];
-                        if (!SecurityValidationSchema_1.default.has(url)) return [3 /*break*/, 4];
-                        schema = SecurityValidationSchema_1.default.get(url);
-                        if (!(req.method == "GET")) return [3 /*break*/, 2];
-                        return [4 /*yield*/, (schema === null || schema === void 0 ? void 0 : schema.validateAsync(req.query))];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, (schema === null || schema === void 0 ? void 0 : schema.validateAsync(req.body))];
-                    case 3:
-                        _a.sent();
-                        _a.label = 4;
-                    case 4:
-                        next();
-                        return [3 /*break*/, 6];
-                    case 5:
-                        err_1 = _a.sent();
-                        Logger_1.Logger.LogError("SecurityValidationMiddleware error", err_1);
-                        res.status(400).json({ error: err_1 });
-                        return [3 /*break*/, 6];
-                    case 6: return [2 /*return*/];
-                }
+                return [2 /*return*/, _super.prototype.create.call(this, user)];
             });
         });
     };
-    SecurityValidationMiddleware = __decorate([
-        inversify_1.injectable()
-    ], SecurityValidationMiddleware);
-    return SecurityValidationMiddleware;
-}(inversify_express_utils_1.BaseMiddleware));
-exports.SecurityValidationMiddleware = SecurityValidationMiddleware;
+    UserCommandRepository.prototype.UpdateUser = function (user, whereCondition) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, _super.prototype.update.call(this, whereCondition, user)];
+            });
+        });
+    };
+    UserCommandRepository.prototype.DeleteUser = function (user) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, _super.prototype.delete.call(this, user)];
+            });
+        });
+    };
+    UserCommandRepository = __decorate([
+        inversify_1.injectable(),
+        __param(0, inversify_1.inject(Entities_1.UserEntity)),
+        __metadata("design:paramtypes", [Entities_1.UserEntity])
+    ], UserCommandRepository);
+    return UserCommandRepository;
+}(BaseRepository_1.BaseRepository));
+exports.UserCommandRepository = UserCommandRepository;

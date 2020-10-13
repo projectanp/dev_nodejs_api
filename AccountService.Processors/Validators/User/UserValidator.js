@@ -54,55 +54,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SecurityValidationMiddleware = void 0;
+exports.UserValidator = void 0;
 var inversify_1 = require("inversify");
-var inversify_express_utils_1 = require("inversify-express-utils");
-var SecurityValidationSchema_1 = __importDefault(require("../../AccountService.API/Configurations/SecurityValidationSchema"));
-var Logger_1 = require("../Logger/Logger");
-var SecurityValidationMiddleware = /** @class */ (function (_super) {
-    __extends(SecurityValidationMiddleware, _super);
-    function SecurityValidationMiddleware() {
+var BaseValidator_1 = require("../BaseValidator");
+var UserValidator = /** @class */ (function (_super) {
+    __extends(UserValidator, _super);
+    function UserValidator() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    SecurityValidationMiddleware.prototype.handler = function (req, res, next) {
+    UserValidator.prototype.ValidateUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, schema, err_1;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 5, , 6]);
-                        url = req.url.split("?")[0];
-                        if (!SecurityValidationSchema_1.default.has(url)) return [3 /*break*/, 4];
-                        schema = SecurityValidationSchema_1.default.get(url);
-                        if (!(req.method == "GET")) return [3 /*break*/, 2];
-                        return [4 /*yield*/, (schema === null || schema === void 0 ? void 0 : schema.validateAsync(req.query))];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, (schema === null || schema === void 0 ? void 0 : schema.validateAsync(req.body))];
-                    case 3:
-                        _a.sent();
-                        _a.label = 4;
-                    case 4:
-                        next();
-                        return [3 /*break*/, 6];
-                    case 5:
-                        err_1 = _a.sent();
-                        Logger_1.Logger.LogError("SecurityValidationMiddleware error", err_1);
-                        res.status(400).json({ error: err_1 });
-                        return [3 /*break*/, 6];
-                    case 6: return [2 /*return*/];
+                // Throw error if any validation fails
+                if (!user || this.IsEmptyObject(user)) {
+                    throw new Error('user should not be null/empty');
                 }
+                return [2 /*return*/, true];
             });
         });
     };
-    SecurityValidationMiddleware = __decorate([
+    UserValidator = __decorate([
         inversify_1.injectable()
-    ], SecurityValidationMiddleware);
-    return SecurityValidationMiddleware;
-}(inversify_express_utils_1.BaseMiddleware));
-exports.SecurityValidationMiddleware = SecurityValidationMiddleware;
+    ], UserValidator);
+    return UserValidator;
+}(BaseValidator_1.BaseValidator));
+exports.UserValidator = UserValidator;
