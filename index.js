@@ -39,4 +39,4 @@ server.setErrorConfig(function (app) {
 });
 var app = server.build();
 exports.routeInfo = inversify_express_utils_1.getRouteInfo(container);
-app.listen(config_1.default.port);
+app.listen(process.env.PORT);
