@@ -111,6 +111,7 @@ var UserController = /** @class */ (function (_super) {
                         return [4 /*yield*/, this._userProcessor.UserSignIn(user)];
                     case 1:
                         users = _c.sent();
+                        res.setHeader("x-auth-token", users["authtoken"]);
                         res.status(200).json(this.MapToSuccessResponse(users));
                         return [3 /*break*/, 3];
                     case 2:
@@ -147,15 +148,16 @@ var UserController = /** @class */ (function (_super) {
     };
     UserController.prototype.UserSignUp = function (user, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var status, err_3;
+            var newUser, err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this._userProcessor.UserSignUp(user)];
                     case 1:
-                        status = _a.sent();
-                        res.status(201).json(this.MapToSuccessResponse(status));
+                        newUser = _a.sent();
+                        res.setHeader("x-auth-token", newUser["authtoken"]);
+                        res.status(201).json(this.MapToSuccessResponse(newUser));
                         return [3 /*break*/, 3];
                     case 2:
                         err_3 = _a.sent();

@@ -79,7 +79,7 @@ var UserProcessor = /** @class */ (function () {
     };
     UserProcessor.prototype.UserSignUp = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b;
+            var _a, _b, newUser, token, resultObj;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -94,7 +94,13 @@ var UserProcessor = /** @class */ (function () {
                         user.created_time = Date.parse(new Date().toUTCString());
                         user.last_updated_time = Date.parse(new Date().toUTCString());
                         return [4 /*yield*/, this.userCommandRepository.CreateUser(user)];
-                    case 3: return [2 /*return*/, _c.sent()];
+                    case 3:
+                        newUser = _c.sent();
+                        return [4 /*yield*/, this.generateToken({ "auid": newUser["auid"].toString() })];
+                    case 4:
+                        token = _c.sent();
+                        resultObj = { userdetails: newUser, authtoken: token };
+                        return [2 /*return*/, resultObj];
                 }
             });
         });
@@ -134,11 +140,20 @@ var UserProcessor = /** @class */ (function () {
     UserProcessor.prototype.UpdateUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
             var whereCondition;
-            return __generator(this, function (_a) {
-                whereCondition = {};
-                whereCondition.auid = user.auid;
-                user.last_updated_time = Date.parse(new Date().toUTCString());
-                return [2 /*return*/, this.userCommandRepository.UpdateUser(user, whereCondition)];
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        whereCondition = {};
+                        whereCondition.auid = user.auid;
+                        user.last_updated_time = Date.parse(new Date().toUTCString());
+                        return [4 /*yield*/, this.userCommandRepository.UpdateUser(user, whereCondition)];
+                    case 1:
+                        _b.sent();
+                        _a = {};
+                        return [4 /*yield*/, this.userQueryRepository.GetUser(whereCondition)];
+                    case 2: return [2 /*return*/, (_a.userdetails = _b.sent(), _a)];
+                }
             });
         });
     };
@@ -146,12 +161,16 @@ var UserProcessor = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var whereCondition, updateUserObj;
             return __generator(this, function (_a) {
-                whereCondition = {};
-                whereCondition.auid = user.auid;
-                updateUserObj = {};
-                updateUserObj.mobile = user.mobile;
-                updateUserObj.last_updated_time = Date.parse(new Date().toUTCString());
-                return [2 /*return*/, this.userCommandRepository.UpdateUser(updateUserObj, whereCondition)];
+                switch (_a.label) {
+                    case 0:
+                        whereCondition = {};
+                        whereCondition.auid = user.auid;
+                        updateUserObj = {};
+                        updateUserObj.mobile = user.mobile;
+                        updateUserObj.last_updated_time = Date.parse(new Date().toUTCString());
+                        return [4 /*yield*/, this.userCommandRepository.UpdateUser(updateUserObj, whereCondition)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
             });
         });
     };
