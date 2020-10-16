@@ -189,9 +189,35 @@ var UserController = /** @class */ (function (_super) {
             });
         });
     };
+    UserController.prototype.UpdateUserMobileNumber = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user, otp, status, err_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        user = {};
+                        user.auid = req.body["auid"];
+                        user.mobile = req.body["mobile"];
+                        otp = req.body["otp"];
+                        return [4 /*yield*/, this._userProcessor.UpdateMobileNumber(user, otp)];
+                    case 1:
+                        status = _a.sent();
+                        res.status(200).json(this.MapToSuccessResponse(status));
+                        return [3 /*break*/, 3];
+                    case 2:
+                        err_5 = _a.sent();
+                        Logger_1.Logger.LogError("update user", err_5);
+                        res.status(500).json(this.MapDefaultFailureResponse(err_5.message));
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     UserController.prototype.DeleteUser = function (id, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var status, err_5;
+            var status, err_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -202,9 +228,9 @@ var UserController = /** @class */ (function (_super) {
                         res.status(200).json(this.MapToSuccessResponse(status));
                         return [3 /*break*/, 3];
                     case 2:
-                        err_5 = _a.sent();
-                        Logger_1.Logger.LogError("delete user", err_5);
-                        res.status(500).json(this.MapDefaultFailureResponse(err_5.message));
+                        err_6 = _a.sent();
+                        Logger_1.Logger.LogError("delete user", err_6);
+                        res.status(500).json(this.MapDefaultFailureResponse(err_6.message));
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -239,6 +265,13 @@ var UserController = /** @class */ (function (_super) {
         __metadata("design:paramtypes", [Object, Object]),
         __metadata("design:returntype", Promise)
     ], UserController.prototype, "UpdateUser", null);
+    __decorate([
+        inversify_express_utils_1.httpPut("/updatemobilenumber"),
+        __param(0, inversify_express_utils_1.request()), __param(1, inversify_express_utils_1.response()),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object, Object]),
+        __metadata("design:returntype", Promise)
+    ], UserController.prototype, "UpdateUserMobileNumber", null);
     __decorate([
         inversify_express_utils_1.httpDelete("/:id"),
         __param(0, inversify_express_utils_1.requestParam('id')), __param(1, inversify_express_utils_1.response()),

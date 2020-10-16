@@ -91,7 +91,8 @@ var UserProcessor = /** @class */ (function () {
                         return [4 /*yield*/, bcrypt_1.default.hash(user.password, user.salt)];
                     case 2:
                         _b.password = _c.sent();
-                        user.language = "en-US";
+                        user.created_time = Date.parse(new Date().toUTCString());
+                        user.last_updated_time = Date.parse(new Date().toUTCString());
                         return [4 /*yield*/, this.userCommandRepository.CreateUser(user)];
                     case 3: return [2 /*return*/, _c.sent()];
                 }
@@ -136,7 +137,21 @@ var UserProcessor = /** @class */ (function () {
             return __generator(this, function (_a) {
                 whereCondition = {};
                 whereCondition.auid = user.auid;
-                return [2 /*return*/, this.userCommandRepository.UpdateUser(whereCondition, user)];
+                user.last_updated_time = Date.parse(new Date().toUTCString());
+                return [2 /*return*/, this.userCommandRepository.UpdateUser(user, whereCondition)];
+            });
+        });
+    };
+    UserProcessor.prototype.UpdateMobileNumber = function (user, otp) {
+        return __awaiter(this, void 0, void 0, function () {
+            var whereCondition, updateUserObj;
+            return __generator(this, function (_a) {
+                whereCondition = {};
+                whereCondition.auid = user.auid;
+                updateUserObj = {};
+                updateUserObj.mobile = user.mobile;
+                updateUserObj.last_updated_time = Date.parse(new Date().toUTCString());
+                return [2 /*return*/, this.userCommandRepository.UpdateUser(updateUserObj, whereCondition)];
             });
         });
     };

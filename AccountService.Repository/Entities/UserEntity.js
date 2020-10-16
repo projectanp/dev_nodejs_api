@@ -57,16 +57,24 @@ var UserEntity = /** @class */ (function (_super) {
         _this.entityName = 'user';
         _this.attributes = {
             auid: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
-            firstname: { type: Sequelize.STRING, allowNull: false },
-            lastname: { type: Sequelize.STRING, allowNull: false },
-            password: { type: Sequelize.STRING, allowNull: false },
+            firstname: { type: Sequelize.STRING(150), allowNull: false },
+            lastname: { type: Sequelize.STRING(150), allowNull: false, defaultValue: "" },
+            password: { type: Sequelize.STRING, allowNull: true },
             salt: { type: Sequelize.STRING, allowNull: false },
             email: { type: Sequelize.STRING, allowNull: false, unique: true },
-            mobile: { type: Sequelize.BIGINT, allowNull: true, unique: false },
-            gender: { type: Sequelize.TINYINT, allowNull: true },
-            country: { type: Sequelize.SMALLINT, allowNull: true },
-            language: { type: Sequelize.STRING, allowNull: false }
+            isemailvalid: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+            ismobilevalid: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+            mobile: { type: Sequelize.STRING(20), allowNull: true, unique: false },
+            gender: { type: Sequelize.TINYINT, allowNull: true, defaultValue: 1 },
+            country: { type: Sequelize.STRING(30), allowNull: true },
+            language: { type: Sequelize.STRING(20), allowNull: false, defaultValue: "en-US" },
+            signup_via: { type: Sequelize.SMALLINT, allowNull: false, defaultValue: 1 },
+            other_login_userid: { type: Sequelize.STRING(50), allowNull: true },
+            timezone: { type: Sequelize.STRING(150), allowNull: false },
+            created_time: { type: Sequelize.BIGINT, allowNull: false },
+            last_updated_time: { type: Sequelize.BIGINT, allowNull: false },
         };
+        _this.options = { timestamps: false };
         _this.initModel();
         return _this;
     }
