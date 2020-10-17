@@ -83,7 +83,7 @@ var AuthenticationMiddleware = /** @class */ (function (_super) {
                         isWhiteListedUrl = whiteListedUrls.indexOf(url) != -1;
                         token = req.header("x-auth-token") || null;
                         authObject = null;
-                        if (!token) return [3 /*break*/, 2];
+                        if (!(!isWhiteListedUrl && token)) return [3 /*break*/, 2];
                         return [4 /*yield*/, jsonwebtoken_1.default.verify(token, config_1.default.jwtsecretkey)];
                     case 1:
                         authObject = _a.sent();
