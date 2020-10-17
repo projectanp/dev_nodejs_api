@@ -78,29 +78,32 @@ var AuthenticationMiddleware = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _a.trys.push([0, 4, , 5]);
                         url = req.url.split("?")[0];
                         isWhiteListedUrl = whiteListedUrls.indexOf(url) != -1;
                         token = req.header("x-auth-token") || null;
                         authObject = null;
-                        if (!(!isWhiteListedUrl && token)) return [3 /*break*/, 2];
+                        if (!!isWhiteListedUrl) return [3 /*break*/, 3];
+                        if (!token) return [3 /*break*/, 2];
                         return [4 /*yield*/, jsonwebtoken_1.default.verify(token, config_1.default.jwtsecretkey)];
                     case 1:
                         authObject = _a.sent();
                         req.user = authObject;
                         _a.label = 2;
                     case 2:
-                        if ((!token && !isWhiteListedUrl) || (token && authObject == null)) {
+                        if ((!token) || (token && authObject == null)) {
                             throw 400;
                         }
-                        next();
-                        return [3 /*break*/, 4];
+                        _a.label = 3;
                     case 3:
+                        next();
+                        return [3 /*break*/, 5];
+                    case 4:
                         err_1 = _a.sent();
                         Logger_1.Logger.LogError("Authtoken validation error", err_1);
                         res.status(400).json({ error: "Authtoken failed" });
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
